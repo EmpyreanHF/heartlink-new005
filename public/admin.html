@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Heart Link · Admin control panel</title>
+<style>
+:root{color-scheme:light dark;--bg:#fff7fb;--card:#fff;--ink:#3b0a24;--mute:#6b7280;--pink:#be185d;--line:#fbcfe8;--ok:#047857;--bad:#b91c1c;--warn:#92400e}
+@media (prefers-color-scheme:dark){:root{--bg:#1a0f16;--card:#26141f;--ink:#fde7f3;--mute:#c9a3b8;--pink:#f9a8d4;--line:#4a2438;--ok:#6ee7b7;--bad:#fca5a5;--warn:#fcd34d}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:10px 12px 0}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px}.top b{font-size:18px;color:var(--pink)}
+nav{display:flex;gap:4px;overflow-x:auto;padding:8px 0;-webkit-overflow-scrolling:touch}nav button{flex:none;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--mute);padding:8px 14px;min-height:40px;font-weight:700}
+nav button.on{background:var(--pink);border-color:var(--pink);color:#fff}nav .n{display:inline-block;min-width:20px;padding:0 6px;margin-left:6px;border-radius:99px;background:var(--bad);color:#fff;font-size:12px}
+main{max-width:900px;margin:0 auto;padding:12px 12px 80px}h1{font-size:21px;margin:6px 0}h2{font-size:17px;margin:22px 0 8px;color:var(--pink)}
+.mute{color:var(--mute);font-size:13px}.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:10px 0}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}.g2{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}@media(max-width:520px){.g2{grid-template-columns:1fr}}
+button,input,textarea,select{font:inherit;border-radius:10px;border:1px solid var(--line);padding:9px 12px;background:var(--card);color:var(--ink);min-height:44px}input,textarea,select{width:100%}
+button{cursor:pointer;font-weight:600}button.p{background:var(--pink);border-color:var(--pink);color:#fff}button.d{color:var(--bad);border-color:var(--bad)}button.ok{color:var(--ok);border-color:var(--ok)}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--pink);outline-offset:2px}label{display:block;font-size:13px;font-weight:700;margin:10px 0 4px}textarea{resize:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}.stat{display:flex;flex-direction:column;align-items:flex-start;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;min-height:76px}
+.stat b{font-size:24px;line-height:1.1}.stat span{color:var(--mute);font-size:13px}.stat.hot{border-color:var(--bad)}
+.tag{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:1px 9px;border:1px solid var(--line);margin:0 4px 4px 0}.tag.bad{color:var(--bad);border-color:var(--bad)}.tag.ok{color:var(--ok);border-color:var(--ok)}.tag.warn{color:var(--warn);border-color:var(--warn)}
+.bars{display:flex;align-items:flex-end;gap:2px;height:110px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px}.bars i{flex:1;background:var(--pink);border-radius:3px 3px 0 0;min-height:2px}
+.axis{display:flex;justify-content:space-between;color:var(--mute);font-size:12px;margin-top:2px}.empty{color:var(--mute);padding:10px 0}table{width:100%;border-collapse:collapse;font-size:14px}td,th{text-align:left;padding:6px 4px;border-bottom:1px solid var(--line);vertical-align:top}
+.who{display:flex;gap:12px;align-items:center}.pic{width:56px;height:56px;border-radius:12px;object-fit:cover;background:var(--line);flex:none}.kv{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;font-size:14px}.kv span:nth-child(odd){color:var(--mute)}
+.img{max-width:100%;max-height:260px;border-radius:10px;border:1px solid var(--line);margin:4px 4px 0 0}#login{max-width:380px;margin:60px auto;padding:0 14px}#err{color:var(--bad);min-height:20px}.chk{display:flex;gap:8px;align-items:center;margin:6px 12px 6px 0;font-size:14px}.chk input{width:22px;min-height:22px}
+</style></head><body>
+<div id="login"><h1>Heart Link admin</h1><p class="mute">Enter the admin secret (the ADMIN_SECRET set on your server).</p><input id="sec" type="password" autocomplete="current-password" placeholder="Admin secret" aria-label="Admin secret"><div class="row"><button class="p" id="go">Open control panel</button></div><p id="err"></p></div>
+<div id="app" hidden><header><div class="top"><b>Heart Link admin</b><button id="out">Sign out</button></div><nav id="nav" aria-label="Sections"></nav></header><main id="view"></main></div>
+<script src="admin-panel.js"></script>
+</body></html>

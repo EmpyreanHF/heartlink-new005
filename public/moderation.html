@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Live moderation · Heart Link admin</title><style>
+:root{color-scheme:light dark;--bg:#fff7fb;--card:#fff;--ink:#3b0a24;--mute:#6b7280;--pink:#be185d;--line:#fbcfe8;--ok:#047857;--bad:#b91c1c;--warn:#92400e}
+@media (prefers-color-scheme:dark){:root{--bg:#1a0f16;--card:#26141f;--ink:#fde7f3;--mute:#c9a3b8;--pink:#f9a8d4;--line:#4a2438;--ok:#6ee7b7;--bad:#fca5a5;--warn:#fcd34d}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:760px;margin:0 auto;padding:18px 14px 70px}h1{font-size:22px;margin:4px 0 2px}h2{font-size:17px;margin:26px 0 8px;color:var(--pink)}
+.mute{color:var(--mute);font-size:13px}.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:10px 0}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}button,input,textarea{font:inherit;border-radius:10px;border:1px solid var(--line);padding:9px 12px;background:var(--card);color:var(--ink)}
+button{cursor:pointer;font-weight:600}button.p{background:var(--pink);border-color:var(--pink);color:#fff}button.d{color:var(--bad);border-color:var(--bad)}button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--pink);outline-offset:2px}
+textarea,input{width:100%}.tag{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:1px 9px;border:1px solid var(--line);margin-right:4px}.tag.bad{color:var(--bad);border-color:var(--bad)}.tag.warn{color:var(--warn);border-color:var(--warn)}.tag.ok{color:var(--ok);border-color:var(--ok)}
+#login{max-width:380px;margin:40px auto}#err{color:var(--bad);min-height:20px}.empty{color:var(--mute);padding:8px 0}
+</style></head><body><main>
+<div id="login"><h1>Live moderation</h1><p class="mute">Enter the admin secret (the same ADMIN_SECRET as the rest of admin).</p><input id="sec" type="password" autocomplete="current-password" placeholder="Admin secret"><div class="row"><button class="p" id="go">Open</button></div><p id="err"></p></div>
+<div id="app" hidden>
+<h1>Live moderation</h1><div id="status" class="mute"></div>
+<h2>Appeals waiting</h2><div id="appeals"></div>
+<h2>Critical reports (possible minor)</h2><div id="critical"></div>
+<h2>Needs a person to look</h2><div id="review"></div>
+<h2>Recent activity</h2><div id="recent"></div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let SECRET=sessionStorage.getItem('flc_adm')||'';
+const KIND={explicit_nudity:'Nudity',sexual_activity:'Sexual activity',reports:'Viewer reports'};
+const when=t=>t?new Date(t).toLocaleString():'';
+async function call(path,method,body){
+  const r=await fetch(path,{method:method||'GET',headers:{'x-admin-secret':SECRET,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});
+  const j=await r.json().catch(()=>({})); if(!r.ok) throw new Error(j.error||('Error '+r.status)); return j;
+}
+async function load(){
+  try{
+    const d=await call('/admin/moderation'); sessionStorage.setItem('flc_adm',SECRET); $('login').hidden=true; $('app').hidden=false;
+    $('status').innerHTML=`Scanner: <b>${esc(d.provider)}</b>${d.provider==='none'?' (nothing is being scanned)':''} · Profile: <b>${esc(d.profile)}</b> · ${d.shadow?'<b>Shadow mode</b> (logging only)':'Enforcing'} · 18+ check for private rooms: <b>${d.ageGate?'on':'off'}</b>`;
+    $('appeals').innerHTML=d.appeals.length?d.appeals.map(a=>`<div class="card"><b>${esc(a.name||a.uid)}</b> <span class="tag warn">${esc(KIND[a.kind]||a.kind)}</span><span class="tag">Strike ${esc(a.strike)}</span><div class="mute">${when(a.createdAt)}</div><p>${esc(a.text)}</p><input id="n_${esc(a.id)}" placeholder="Note to the person (optional)" maxlength="300"><div class="row"><button class="p" data-act="appeal" data-id="${esc(a.id)}" data-v="approve">Approve: remove strike</button><button data-act="appeal" data-id="${esc(a.id)}" data-v="deny">Deny</button></div></div>`).join(''):'<div class="empty">No appeals waiting.</div>';
+    $('critical').innerHTML=d.critical.length?d.critical.map(c=>`<div class="card"><span class="tag bad">Critical</span> <b>${esc(c.reason)}</b><div class="mute">Room ${esc(c.roomId)} · reported ${when(c.createdAt)}</div><p>${esc(c.details||'No details')}</p><div class="row"><button class="d" data-act="user" data-id="${esc(c.to)}" data-v="ban" data-rep="${esc(c.id)}">Ban account</button><button data-act="user" data-id="${esc(c.to)}" data-v="dismiss" data-rep="${esc(c.id)}">Dismiss report</button></div></div>`).join(''):'<div class="empty">Nothing critical.</div>';
+    const rev=d.incidents.filter(i=>i.needsReview&&i.status==='open');
+    $('review').innerHTML=rev.length?rev.map(i=>`<div class="card"><b>${esc(i.name||i.uid)}</b> <span class="tag bad">${esc(KIND[i.kind]||i.kind)}</span>${i.strike?`<span class="tag">Strike ${esc(i.strike)}</span>`:''}<div class="mute">${when(i.createdAt)}${i.reporters?' · '+esc(i.reporters)+' people reported':''}${i.score?' · score '+esc(i.score):''}</div><div class="row"><button class="d" data-act="user" data-id="${esc(i.uid)}" data-v="ban">Ban account</button>${i.source==='reports'?`<button class="p" data-act="user" data-id="${esc(i.uid)}" data-v="strike" data-room="${esc(i.roomId)}">Confirm: add strike</button>`:''}<button data-act="user" data-id="${esc(i.uid)}" data-v="lift">Lift restriction</button></div></div>`).join(''):'<div class="empty">Nobody is waiting for review.</div>';
+    $('recent').innerHTML=d.incidents.length?d.incidents.slice(0,25).map(i=>`<div class="card"><b>${esc(i.name||i.uid)}</b> <span class="tag ${i.shadow?'':'warn'}">${esc(KIND[i.kind]||i.kind)}</span><span class="tag ${i.status==='overturned'?'ok':''}">${esc(i.status||'')}</span><div class="mute">${when(i.createdAt)}${i.strike?' · strike '+esc(i.strike):''}${i.score?' · score '+esc(i.score):''}</div></div>`).join(''):'<div class="empty">No incidents yet.</div>';
+  }catch(e){ $('err').textContent=e.message; if(!$('app').hidden) alert(e.message); else { $('login').hidden=false; sessionStorage.removeItem('flc_adm'); } }
+}
+document.addEventListener('click',async e=>{
+  const b=e.target.closest('button[data-act]'); if(!b) return;
+  if(b.dataset.v==='ban'&&!confirm('Ban this account? They will no longer be able to sign in.')) return;
+  b.disabled=true;
+  try{
+    if(b.dataset.act==='appeal') await call('/admin/moderation/appeal/'+b.dataset.id,'POST',{action:b.dataset.v,note:($('n_'+b.dataset.id)||{}).value||''});
+    else await call('/admin/moderation/user/'+b.dataset.id,'POST',{action:b.dataset.v,reportId:b.dataset.rep||undefined,roomId:b.dataset.room||undefined});
+    load();
+  }catch(err){ alert(err.message); b.disabled=false; }
+});
+$('go').onclick=()=>{ SECRET=$('sec').value.trim(); $('err').textContent=''; load(); };
+$('sec').addEventListener('keydown',e=>{ if(e.key==='Enter') $('go').click(); });
+if(SECRET) load();
+</script></main></body></html>
