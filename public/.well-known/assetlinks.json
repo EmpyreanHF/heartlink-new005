@@ -1,0 +1,11 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.heartlinkng.app",
+    "sha256_cert_fingerprints": [
+      "5A:C6:B9:98:5D:FE:8A:28:E9:B0:2D:0A:3B:77:6A:FA:AD:C5:BF:52:11:64:57:EF:4D:65:22:B6:70:59:B4:7F",
+      "DE:E8:8A:CB:4D:FF:EA:75:92:AF:D8:B4:B8:76:2A:9E:78:B0:93:81:A0:79:AE:43:6D:D4:1C:03:27:51:73:E7"
+    ]
+  }
+}]
