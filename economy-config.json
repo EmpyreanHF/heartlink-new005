@@ -1,0 +1,49 @@
+{
+  "version": "2026-11-18",
+
+  "coins": {
+    "callCostPerMinute": 10,
+    "worstCaseStoreFeePct": 30,
+    "note": "Beans are valued at TOKEN_PAYOUT_USD dollars each (0.013 unless you set the environment variable). Net revenue per coin is computed from the cheapest pack in PACKS after the worst-case store fee, so no commission or bonus can ever be larger than what was really collected."
+  },
+
+  "tiers": [
+    { "minFollowers": 0, "beanPct": 50 },
+    { "minFollowers": 1000, "beanPct": 55 },
+    { "minFollowers": 10000, "beanPct": 60 },
+    { "minFollowers": 50000, "beanPct": 65 },
+    { "minFollowers": 200000, "beanPct": 70 }
+  ],
+
+  "promo": {
+    "signupMinutes": 1,
+    "oncePerDeviceOrPhone": true,
+    "legacyMaxMinutes": 12,
+    "cutoverIso": "2026-11-18T00:00:00Z",
+    "expPerPromoMinute": 10,
+    "usableOn": ["call"],
+    "note": "Promo credits are call minutes. They never pay Beans and never trigger a referral commission. Existing accounts keep their old free tokens as call minutes (up to legacyMaxMinutes); everything above what they really bought is removed from the coin balance."
+  },
+
+  "referral": {
+    "commissionPct": 8,
+    "escrowDays": 7,
+    "signupBountyTokens": 0,
+    "note": "Percent of NET PLATFORM REVENUE on a Paid_Coin spend (net of store fees and after the creator's Beans). Held 7 days before it can be withdrawn."
+  },
+
+  "dailyStream": {
+    "timezoneOffsetHours": 1,
+    "minMinutes": 30,
+    "expBonusBase": 50,
+    "expBonusPerStreakDay": 10,
+    "expBonusMaxStreakDays": 7,
+    "hotFeedHours": 6,
+    "expBoostHours": 24,
+    "expBoostMultiplier": 1.2,
+    "streakPromoMinutes": { "7": 5, "30": 15 },
+    "minPaidGiftCoinsForCashBonus": 500,
+    "cashBonusPctOfPaidGifts": 3,
+    "maxCashBonusBeans": 200
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "version": "2026-11-17",
+  "profile": "standard",
+
+  "scan": {
+    "intervalMs": 3000,
+    "minGapMs": 2000,
+    "frameMaxPx": 320,
+    "jpegQuality": 0.6,
+    "providerTimeoutMs": 6000
+  },
+
+  "classes": {
+    "suggestive_attire": {
+      "action": "allow",
+      "note": "Swimwear, crop tops, fitted dresses, lingerie-style fashion, cleavage, bare skin. Never warns, never strikes. Scored only so it can be told apart from nudity."
+    },
+    "explicit_nudity": {
+      "action": "restrict",
+      "note": "Nipples/areolas, genitalia, fully exposed buttocks, or see-through clothing that shows them."
+    },
+    "sexual_activity": {
+      "action": "restrict_severe",
+      "note": "Explicit sexual acts. Ends the stream, jumps straight to Strike 3 and goes to a human reviewer."
+    }
+  },
+
+  "profiles": {
+    "standard": {
+      "explicit_nudity": { "warn": 0.55, "violate": 0.85, "instant": 0.93, "consecutiveFrames": 2 },
+      "sexual_activity": { "warn": 0.40, "violate": 0.70, "instant": 0.70, "consecutiveFrames": 1 },
+      "suggestive_attire": { "warn": 1.01, "violate": 1.01 }
+    },
+    "strict": {
+      "explicit_nudity": { "warn": 0.40, "violate": 0.75, "instant": 0.88, "consecutiveFrames": 2 },
+      "sexual_activity": { "warn": 0.30, "violate": 0.55, "instant": 0.55, "consecutiveFrames": 1 },
+      "suggestive_attire": { "warn": 0.97, "violate": 1.01 }
+    }
+  },
+
+  "warning": {
+    "graceSeconds": 15,
+    "clearAfterCleanFrames": 2,
+    "banner": "Adjust camera or attire to comply with Public Live guidelines"
+  },
+
+  "strikes": {
+    "tiers": [
+      { "strike": 1, "restrictHours": 1 },
+      { "strike": 2, "restrictHours": 24 },
+      { "strike": 3, "restrictHours": 168 }
+    ],
+    "fourthStrikeAndAbove": { "restrictHours": 168, "needsHumanReview": true },
+    "severeJumpToStrike": 3,
+    "strikesExpireAfterDays": 90
+  },
+
+  "appeals": {
+    "enabled": true,
+    "maxOpenPerUser": 1,
+    "minTextLength": 10,
+    "windowDays": 30
+  },
+
+  "liveReports": {
+    "distinctReportersToTakeDown": 3,
+    "windowMinutes": 5,
+    "takeDownRestrictHours": 1,
+    "countsAsStrikeOnlyAfterAdminConfirms": true
+  },
+
+  "privateRoom": {
+    "requireHostAge18Verified": true,
+    "requireViewerAge18Verified": true,
+    "requireMutualConsent": true,
+    "consentVersion": 1,
+    "consentWindowSeconds": 60,
+    "discoverable": false,
+    "scanFramesInPrivate": true,
+    "sameNudityRuleAsPublic": true,
+    "screenCapture": "blocked_where_supported"
+  },
+
+  "zeroTolerance": ["minor", "non_consensual", "harassment", "illegal_activity"]
+}
